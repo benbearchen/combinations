@@ -86,7 +86,9 @@ namespace boost
       detail::sort_combination (first, middle);
       detail::sort_combination (middle, last);
       if (min)
-	detail::twice_merge (first, middle, middle, last);
+	{
+	  detail::twice_merge (first, middle, middle, last);
+	}
       else
 	{
 	  detail::twice_merge (middle, last, first, middle);
@@ -102,7 +104,9 @@ namespace boost
       detail::sort_combination (first, middle, comp);
       detail::sort_combination (middle, last, comp);
       if (min)
-	detail::twice_merge (first, middle, middle, last, comp);
+	{
+	  detail::twice_merge (first, middle, middle, last, comp);
+	}
       else
 	{
 	  detail::twice_merge (middle, last, first, middle, comp);

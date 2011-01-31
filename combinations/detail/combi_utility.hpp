@@ -183,7 +183,14 @@ namespace boost
     
       ///////////////////////////////////////////////////////////////////
       // combination_merge_right: merge the two right parts in
-      //                            combination, 
+      //            combination.
+      //
+      //  REQUIRE: [first1, last1) and [first2, last2) should be
+      //            ordered; any first1 should be not less than
+      //            first2.
+      //
+      //  RESULT: smallest elements in [first1, last1), while left in
+      //            [first2, last2).
       ///////////////////////////////////////////////////////////////////
       template <typename BiIter1, typename BiIter2>
       void

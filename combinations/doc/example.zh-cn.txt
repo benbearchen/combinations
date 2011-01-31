@@ -1,0 +1,56 @@
+1) 挑选 Stargate 的三个种族开圆桌会议，求出所有可能组合（exam_races.cpp）：
+
+std::string races[] = {"Ancients", "Asgard", "Earth", "Furling", "Goa'uld",
+	    	       "Nox", "Ori", "Tok'ra", "Tollan", "Unas"};
+int n = 10;
+int m = 3;
+boost::combinations::init_combination(races, races + m, races + n, true);
+// or
+std::sort(races, races + n);
+
+do
+  {
+    // visit [races, races + m), such as:
+    for (int i = 0; i < m; ++i)
+      printf("%s,", races[i].c_str());
+    printf("\n");
+  }
+while (boost::combinations::next_combination(races, races + m, races + n));
+
+
+2) 从 1~9 这十个数字中挑选四个数字（不重复），以满足 a+b*c-d = 32（exam_calc.cpp）：
+
+int a[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+int n = 9;
+int m = 4;
+
+boost::combinations::init_permutation(a, a + m, a + n, false);
+// or
+boost::combinations::init_permutation(a, a + m, a + n, true);
+boost::combinations::prev_permutation(a, a + m, a + n);
+// or
+std::sort(a, a + n);
+std::reverse(a, a + n);
+std::reverse(a + m, a + n);
+
+do
+  {
+    if (a[0] + a[1] * a[2] - a[3] == 32)
+      printf("%d+%d*%d-%d=32\n", a[0], a[1], a[2], a[3]);
+  }
+while (boost::combinations::prev_permutation(a, a + m, a + n));
+
+
+3) 求一个整数的所有约数（exam_int_div.cpp）：
+
+int a[] = {2, 3, 3, 5}; // 2 * 3 * 3 * 5 = 90
+for (int i = 0; i <= 4; ++i)
+{
+  do
+    {
+      int n = 1;
+      for (int j = 0; j < i; ++j)
+        n *= a[j];
+    }
+  while (boost::combinations::next_combination(a, a + i, a + 4));
+}

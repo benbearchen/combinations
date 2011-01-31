@@ -1,0 +1,211 @@
+如何使用 Boost.Combinations
+
+Boost.Combinations 提供枚举组合（combination）和排列（permutation）所有
+选择结果的算法。不同于 STL 的 std::next_permutation()，这里提供的算法都可
+以选择部分元素，而不是只能选择全部元素。如果你了解数学上的排列、组合与
+std::next_permutation()，那么我们可以开始了。
+
+章节：
+A 工作模式
+B 接口
+C 典型使用方法
+
+
+A 工作模式
+
+Boost.Combinations 通过不停地枚举组合或者排列的选择结果，提供了遍历排组
+合或者排列所有选择结果的能力。
+
+1) 基本定义
+
+    * 排列（permutation）是指有顺序地从所有待选元素中挑选出一部分元素，
+      选出来的元素按顺序构成不同的结果。
+
+    * 组合（combination）是指从所有待选元素中挑选出一部分元素，选出来的
+      组成顺序无关的结果。
+
+    * 选择结果指一种组合或者排列选择的结果。假定元素之间可以比较大小，
+      则依照元素的大小，可以定义选择结果之间的字典序大小。
+
+    * 循环是指一类组合或者排列的选择结果，按最小到最大的顺序，组成一个
+      循环。“大小”排序，选出最小的选择和最大的选择。从最小的选择到最
+      大的选择，可以构成一次枚举的循环。
+
+    * next 前缀是指从一个输入的选择结果，挑选下一个更“大”一点的选择结
+      果。如果输入已经是最大的选择结果，则表示一个 next 枚举的循环已经
+      结束，挑选最“小”的选择结果，作为循环的开始。
+
+    * prev 前缀是指从一个输入的选择结果，挑选下一个更“小”一点的选择结
+      果。如果输入已经是最小的选择结果，则表示一个 prev 枚举的循环已经
+      结束，挑选最“大”的选择结果，作为循环的开始。
+
+2) 枚举的方法
+
+组合或者排列的所有选择结果，可以按照大小顺序排成一个序列。序列首尾相交
+组成一个循环。枚举的过程就是在循环内，从一个选择结果变化到循环内相邻的
+另一个选择结果。next 是在循环内选择下一个偏向更大的结果；prev 是在循环
+内选择上一个偏向更小的结果。这样选择一个起点，就可以按照 next 或者
+prev 的方向，来遍历整个循环，也就是枚举所有的选择结果。
+
+比如从 {1, 2, 3} 选 2 的排列的 6 个结果，可以构成 {1, 2}, {1, 3}, {2,
+1}, {2, 3}, {3, 1}, {3, 2} 的循环。{1, 2} 的 next 是 {1, 3}，prev 是
+{3, 2}。{3, 2} 的 next 是 {1, 2}，prev 是 {3, 1}。{2, 1} 的 next 是
+{2, 3}，prev 是 {1, 3}。
+
+3) 初始化
+
+由于性能的原因，Boost.Combinations 要求组合选中的元素是有序的（组合的结
+果本身是顺序无关的）；同时要求所有的未选中元素也是有序的，这样便于挑选。
+对组合来说，规则是保持 [first, middle) 和 [middle, last) 分别有序。对排
+列来说，规则是保持 [middle, last) 有序就可以了。
+
+    Boost.Combinations 枚举的输入参数需要一定规则（也就是要求初始化），
+    这一点不同于 STL 的 std::next_permutation()。因为任何序列对于
+    std::next_permutation() 都是合法的输入参数，但是
+    Boost.Combinations 因为是要求未被选择元素是有序的，所以需要一定的初
+    始化。
+
+    一个组合的选择结果一定是有效的排列。一个排列的选择结果，不一定是有
+    效的组合。
+
+为了方便初始化，Boost.Combinations 提供了 init 和 adjust 前缀的函数用来
+完成这些初始化动作。当然，调用者自己对必要的区间进行排序等操作也是可以
+的。
+
+adjust 前缀的函数可以在保持选中元素不变的情况下，将 [first, last) 调节
+成规则的选择结果。等价的，可以手动将组合的 [first, middle) 和 [middle,
+last) 分别排序；将排列的 [middle, last) 排序。
+
+init 前缀的函数依据 min 参数将 [first, last) 调节成最小或者最大的选择结
+果。这种情况适合于从头到尾（反过来是从尾到头）枚举所有选择结果。等价的
+手动操作时：最小选择结果，组合和排列都只需将 [first, last) 排序；最大选
+择结果，组合要将 [first, last) 排序后再将 [first, last)、[first,
+middle) 和 [middle, last) 依次逆序，而排列要将 [first, last) 排序后再将
+[first, last) 和 [middle, last) 逆序即可。
+
+
+B 接口
+
+所有的函数基本都提供 [first, middle, last) 的参数来表示元素集合，也提供
+了谓词版本来自定义大小关系。下面分别介绍枚举函数和初始化函数。
+
+枚举函数：
+
+template <typename BiIter>
+bool
+boost::combinations::next_combination(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+bool
+boost::combinations::prev_combination(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+bool
+boost::combinations::next_permutation(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+bool
+boost::combinations::prev_permutation(BiIter first, BiIter middle, BiIter last);
+
+1) 参数：以上函数都提供 (first, middle, last) 参数列表，表示用来组合或
+者排列的元素集合。其中 [first, middle) 为选中的元素，[middle, last) 为
+未选中的元素，[first, last) 为所有元素的集合。对于所有函数，[middle,
+last) 都应该是有序的；对于组合函数，[first, middle) 也应该是有序的。
+(first, middle, last) 既是输入，也是输出。
+
+BiIter 必须具备双向迭代器的功能。
+
+
+    警告：无效的输入参数导致无效的输出结果的。（感谢 Herve 的帮助）请确
+    保已经初始化了。初始化可以调用专门的初始化函数，或者手动初始化。
+
+2) 返回值：如果输入序列是选择循环的最后一个，则返回 false；否则返回
+true。组合和排列所有选择都会有一个循环，从循环的最后一个序列跳到第一个
+序列，会返回 false。对于空序列，总是返回 false。
+
+3) 操作：函数将输入序列从当前选择调整成下一个或上一个选择结果。next 会
+按照枚举的循环选择下一个选择结果；prev 会按照枚举的循环选择上一个选择结
+果；循环一轮结束后，自动重头开始。
+
+初始化函数：
+
+template <typename BiIter>
+void
+init_combination(BiIter first, BiIter middle, BiIter last, bool min);
+
+template <typename BiIter>
+void
+adjust_combination(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+void
+init_permutation(BiIter first, BiIter middle, BiIter last, bool min);
+
+template <typename BiIter>
+void
+adjust_permutation(BiIter first, BiIter middle, BiIter last);
+
+其中 init 前缀的函数用来将一个元素序列，调节成枚举循环的第一个或者最后
+一个选择结果，以方便枚举。adjust 前缀的函数用来保持选中元素不变的情况
+下，将序列整理成有效的选择结果。
+
+初始化后可以调用枚举接口。
+
+
+C) 典型使用方法
+
+1) 组合
+
+// 最小初始化
+init_combination(first, middle, last, true);  // or
+sort(first, last);
+// 从小到大遍历
+do
+  {
+    // visit [first, middle)
+  }
+while (next_combination(first, middle, last));
+
+// 最大初始化
+init_combination(first, middle, last, false); // or
+sort(first, last); reverse(first, last); reverse(first, middle); reverse(middle, last); // or
+sort(first, last); prev_combination(first, middle, last);
+// 从大到小遍历
+do
+  {
+    // visit [first, middle)
+  }
+while (prev_combination(first, middle, last));
+
+// 按照当前选中集合初始化
+adjust_combination(first, middle, last); // or
+sort(first, middle); sort(middle, last);
+// 然后请随意 next 或者 prev
+
+2) 排列
+
+// 最小初始化
+init_permutation(first, middle, last, true); // or
+sort(first, last);
+// 从小到大遍历
+do
+  {
+    // visit [first, middle)
+  }
+while (next_permutation(first, middle, last));
+
+// 最大初始化
+init_permutation(first, middle, last, false); // or
+sort(first, last); reverse(first, last); reverse(middle, last); // or
+sort(first, last); prev_permutation(first, middle, last);
+// 从大到小遍历
+do
+  {
+    // visit [first, middle)
+  }
+while (prev_permutation(first, middle, last));
+
+// 按照当前选中集合初始化
+adjust_permutation(first, middle, last); // or
+sort(middle, last);
+// 然后请随意 next 或者 prev

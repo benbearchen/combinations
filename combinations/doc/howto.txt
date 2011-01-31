@@ -1,0 +1,215 @@
+How To Use Boost.Combinations
+
+Boost.Combinations provides template functions that can enumerate
+combinations' and permutations' selections.  Unlike STL's
+std::next_permutation(), those functions can select partial elements,
+but not all elements.  If you known combination and permutation in
+math and std::next_permutation(), let's go.
+
+Chapters:
+A) Work Pattern
+B) Interfaces
+C) Typical Using Methods
+
+
+A) Work Pattern
+
+1) Basic Definations
+
+    * Permutation: select some elements from set, with order
+
+    * Combination: select some elements from set, without order
+
+    * A select result means a selection of combination or permutation.
+      Two select results can be compared, and defines
+      lexicographical order.
+
+    * All select results form a loop by lexicographical order.
+      An enumeration means moving in a loop.
+
+    * The prefix "next" means select a greater select result by
+      lexicographical order.  If there's no more greater, select the
+      smallest one.
+
+    * The prefix "prev" means select a less select result by
+      lexicographical order.  If there's no more less, select the
+      largest one.
+
+    * Ranges (first, middle, last) is needed by all functions.  Range
+      [first,last) has all elements, range [first, middle) has the
+      selected elements, and [middle, last) has the unselected
+      elements.
+
+2) Enumerate
+
+Combination's or permutation's all select results form a loop, and
+enumeration is moving step by step in the loop.  Prefix next move
+greater, while prefix prev move less.
+
+A permutation, select 2 number from {1, 2, 3}, has six select results,
+{1, 2}, {1, 3}, {2, 1}, {2, 3}, {3, 1}, {3, 2}.  The next of {1, 2} is
+{1, 3}, and the prev of {1, 2} is {3, 2}.  The next of {3, 2} is {1,
+2}, and the prev is {3, 1}.  The next of {2, 1} is {2, 3}, and the
+prev is {1, 3}.
+
+3) Initialize
+
+Because of performance, Boost.Combinations need all unselected
+elements to be ordered, and combination's selected elements to be
+ordered.  It's easy to enumerate elements.  For combinations, both
+[first, middle) and [middle, last) should be ordered.  For
+permutations, only [middle, last) should be ordered.
+
+    Boost.Combinations needs an order, that's different from
+    std::next_permutation().
+
+    A combination select result is a permutation select result, but a
+    permutation select result may be not a combination select result.
+
+Boost.Combinations provides some functions to initialize ranges
+(first, middle, last).  Those functions have prefix "init" or
+"adjust".  Also, you can make the order by yourself.
+
+Prefix adjust functions, adjust_combination() and
+adjust_permutation(), can make the order, and don't change the
+selected elements.  (Well, adjust_combination will sort the selected
+elements, but combinations don't care the order.)  By manual, you can
+sort [first, middle) and [middle, last) for combinations, while only
+sort [middle, last) for permutations.
+
+Prefix init functions, init_combination() and init_permutation(), will
+make the ranges to be smallest or largest select result, consider the
+parameter "min".  It's suited for enumerating all select results.  By
+manual, to get the smallest result, both combinations and permutations
+need to sort the [first, last). To get the largest result,
+combinations need to sort [first, last) and reverse [first, last),
+[first, middle) and [middle, last), one by one; while permutations
+need to sort [first, last) and reverse [first, last) and [middle, last).
+
+
+B) Interfaces
+
+All functions accept (first, middle, last) as parameters.  Binary
+predicate functor verions are also provided.
+
+a) enumerating functions:
+
+template <typename BiIter>
+bool
+boost::combinations::next_combination(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+bool
+boost::combinations::prev_combination(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+bool
+boost::combinations::next_permutation(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+bool
+boost::combinations::prev_permutation(BiIter first, BiIter middle, BiIter last);
+
+1) parameters: [first, last) are all elements, [first, middle) are the
+   selected elements, and [middle, last) are the unselected elements.
+   [middle, last) should be always ordered and [first, middle) should
+   be ordered for combinations.  (first, middle, last) is both input
+   ranges and output.
+
+BiIter should be bidirectional iterator.
+
+    Warning: invalid input results invalid output. (Thanks Herve)
+    Please make sure that the ranges were initialized.  Well,
+    initialization functions are provided.
+
+2) returns: if the input ranges is the last one in the loop(largest
+   for next and smallest for prev), returns false; otherwise true.
+   For empty ranges, false was always returned.
+
+3) operate: functions get the input ranges to be the next or prev
+   select result.  next will select a greater select result; while
+   prev will select a less select result.  When a loop finish, a new
+   loop starts.
+
+b) initialization functions:
+
+template <typename BiIter>
+void
+init_combination(BiIter first, BiIter middle, BiIter last, bool min);
+
+template <typename BiIter>
+void
+adjust_combination(BiIter first, BiIter middle, BiIter last);
+
+template <typename BiIter>
+void
+init_permutation(BiIter first, BiIter middle, BiIter last, bool min);
+
+template <typename BiIter>
+void
+adjust_permutation(BiIter first, BiIter middle, BiIter last);
+
+Prefix init functions are used to initialize a select result to be
+smallest or largest one.  Prefix adjust functions are used to mainain
+the selected elements and make the ranges order.
+
+Enumerating functions can be called after initialization.
+
+
+C) Typical Using Methods
+
+1) combinations
+
+// smallest initialization
+init_combination(first, middle, last, true);  // or
+sort(first, last);
+// enumerate from smallest to largest
+do
+  {
+    // visit [first, middle)
+  }
+while (next_combination(first, middle, last));
+
+// largest initialization
+init_combination(first, middle, last, false); // or
+sort(first, last); reverse(first, last); reverse(first, middle); reverse(middle, last); // or
+sort(first, last); prev_combination(first, middle, last);
+// enumerate from largest to smallest
+do
+  {
+    // visit [first, middle)
+  }
+while (prev_combination(first, middle, last));
+
+// initialization with current selected elements
+adjust_combination(first, middle, last); // or
+sort(first, middle); sort(middle, last);
+// now, please next or prev
+
+2) permutations
+
+// smallest initialization
+init_permutation(first, middle, last, true); // or
+sort(first, last);
+// enumerate from smallest to largest
+do
+  {
+    // visit [first, middle)
+  }
+while (next_permutation(first, middle, last));
+
+// largest initialization
+init_permutation(first, middle, last, false); // or
+sort(first, last); reverse(first, last); reverse(middle, last); // or
+sort(first, last); prev_permutation(first, middle, last);
+// enumerate from largest to smallest
+do
+  {
+    // visit [first, middle)
+  }
+while (prev_permutation(first, middle, last));
+
+// initialization with current selected elements
+adjust_permutation(first, middle, last); // or
+sort(middle, last);
+// now, please next or prev

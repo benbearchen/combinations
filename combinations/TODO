@@ -1,0 +1,4 @@
+ToDo List:
+
+* init and adjust functions use external sort function to replace
+  detail::twice_merge().  This can remove the new[] operator.

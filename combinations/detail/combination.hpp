@@ -35,14 +35,14 @@ namespace boost
       
 	BiIter qmax = last2;
 	--qmax;
-	BiIter pout1 = std::lower_bound(first1, last1, *qmax);
-	bool fin = pout1 == first1;
+	BiIter pout1 = std::lower_bound (first1, last1, *qmax);
+	bool fin = (pout1 == first1);
 	BiIter left1, left2;
 	if (!fin)
 	  {
 	    BiIter pout = pout1;
 	    --pout;
-	    BiIter qin = std::upper_bound(first2, last2, *pout);
+	    BiIter qin = std::upper_bound (first2, last2, *pout);
 	    std::iter_swap (pout, qin);
 	    left1 = pout;
 	    ++left1;
@@ -75,14 +75,14 @@ namespace boost
       
 	BiIter qmax = last2;
 	--qmax;
-	BiIter pout1 = std::lower_bound(first1, last1, *qmax, comp);
-	bool fin = pout1 == first1;
+	BiIter pout1 = std::lower_bound (first1, last1, *qmax, comp);
+	bool fin = (pout1 == first1);
 	BiIter left1, left2;
 	if (!fin)
 	  {
 	    BiIter pout = pout1;
 	    --pout;
-	    BiIter qin = std::upper_bound(first2, last2, *pout, comp);
+	    BiIter qin = std::upper_bound (first2, last2, *pout, comp);
 	    std::iter_swap (pout, qin);
 	    left1 = pout;
 	    ++left1;
