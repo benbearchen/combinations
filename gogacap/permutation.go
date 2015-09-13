@@ -63,3 +63,14 @@ func PermuPrevInt(ints []int) bool {
 	sort.Sort(sort.Reverse(sort.IntSlice(ints[s:]))) // TODO: real reverse
 	return s > 0
 }
+
+func PartPermuNextInt(ints []int, c int) bool {
+	sort.Sort(sort.Reverse(sort.IntSlice(ints[c:]))) // TODO: real reverse
+	return PermuNextInt(ints)
+}
+
+func PartPermuPrevInt(ints []int, m int) bool {
+	r := PermuPrevInt(ints)
+	sort.Ints(ints[m:])
+	return r
+}
