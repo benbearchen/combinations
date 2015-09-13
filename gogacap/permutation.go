@@ -20,7 +20,7 @@ func PermuNextInt(ints []int) bool {
 		}
 	}
 
-	sort.Ints(ints[b:]) // TODO: real reverse
+	reverseInts(ints[b:])
 	if b == 0 {
 		return false
 	}
@@ -60,17 +60,17 @@ func PermuPrevInt(ints []int) bool {
 		ints[s-1], ints[i-1] = ints[i-1], ints[s-1]
 	}
 
-	sort.Sort(sort.Reverse(sort.IntSlice(ints[s:]))) // TODO: real reverse
+	reverseInts(ints[s:])
 	return s > 0
 }
 
 func PartPermuNextInt(ints []int, c int) bool {
-	sort.Sort(sort.Reverse(sort.IntSlice(ints[c:]))) // TODO: real reverse
+	reverseInts(ints[c:])
 	return PermuNextInt(ints)
 }
 
-func PartPermuPrevInt(ints []int, m int) bool {
+func PartPermuPrevInt(ints []int, c int) bool {
 	r := PermuPrevInt(ints)
-	sort.Ints(ints[m:])
+	reverseInts(ints[c:])
 	return r
 }
