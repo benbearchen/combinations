@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+import (
+	"fmt"
+)
+
 func sliceEq(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
@@ -94,4 +98,25 @@ func TestLowerBoundInts(t *testing.T) {
 	test([]int{0, 1, 2}, 1, 1)
 	test([]int{0, 1, 2}, 2, 2)
 	test([]int{0, 1, 2}, 3, 3)
+}
+
+func TestInplaceMergeInts(t *testing.T) {
+	test := func(a, b, c, d []int) {
+		input := fmt.Sprintf("%v-%v", a, b)
+		inplaceMergeInts(a, b)
+		if !sliceEq(a, c) || !sliceEq(b, d) {
+			t.Errorf("%s => %v-%v != %v-%v", input, a, b, c, d)
+		}
+	}
+
+	test([]int{}, []int{}, []int{}, []int{})
+	test([]int{0}, []int{1}, []int{0}, []int{1})
+	test([]int{1}, []int{0}, []int{0}, []int{1})
+	test([]int{1, 2}, []int{0}, []int{0, 1}, []int{2})
+	test([]int{2}, []int{0, 1}, []int{0}, []int{1, 2})
+	test([]int{0, 1}, []int{1}, []int{0, 1}, []int{1})
+	test([]int{0, 2}, []int{1}, []int{0, 1}, []int{2})
+	test([]int{0, 2}, []int{1, 2, 2}, []int{0, 1}, []int{2, 2, 2})
+	test([]int{0, 2}, []int{1, 2, 3}, []int{0, 1}, []int{2, 2, 3})
+	test([]int{0, 4}, []int{1, 2, 3}, []int{0, 1}, []int{2, 3, 4})
 }

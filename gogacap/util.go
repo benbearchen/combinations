@@ -31,3 +31,28 @@ func lowerBoundInts(ints []int, x int) int {
 
 	return i
 }
+
+func inplaceMergeInts(a, b []int) {
+	c := make([]int, 0, len(a)+len(b))
+	i, j := 0, 0
+	for i < len(a) && j < len(b) {
+		if a[i] < b[j] {
+			c = append(c, a[i])
+			i++
+		} else {
+			c = append(c, b[j])
+			j++
+		}
+	}
+
+	if i < len(a) {
+		c = append(c, a[i:]...)
+	}
+
+	if j < len(b) {
+		c = append(c, b[j:]...)
+	}
+
+	copy(a, c[:len(a)])
+	copy(b, c[len(a):])
+}
