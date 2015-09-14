@@ -1,9 +1,5 @@
 package gogacap
 
-import (
-	"sort"
-)
-
 func PermuNextInt(ints []int) bool {
 	if len(ints) <= 1 {
 		return false
@@ -25,12 +21,7 @@ func PermuNextInt(ints []int) bool {
 		return false
 	}
 
-	v := ints[b-1]
-	i := b + sort.SearchInts(ints[b:], v)
-	for ints[i] == v {
-		i++
-	}
-
+	i := b + upperBoundInts(ints[b:], ints[b-1])
 	ints[b-1], ints[i] = ints[i], ints[b-1]
 	return true
 }
@@ -51,12 +42,7 @@ func PermuPrevInt(ints []int) bool {
 	}
 
 	if s > 0 {
-		v := ints[s-1]
-		i := s + sort.SearchInts(ints[s:], v)
-		for ints[i-1] == v {
-			i--
-		}
-
+		i := s + lowerBoundInts(ints[s:], ints[s-1])
 		ints[s-1], ints[i-1] = ints[i-1], ints[s-1]
 	}
 
