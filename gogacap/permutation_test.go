@@ -24,15 +24,15 @@ func TestPermutationInts(t *testing.T) {
 	test := func(ints []int, c int) {
 		//fmt.Println(ints, ">>>>>")
 		checkCircle(t, func() bool {
-			more := PermuNextInt(ints)
+			more := PermuNextInts(ints)
 			//fmt.Println(ints)
 			return more
 		}, c, fmt.Sprintf("permutation next(%v)", ints))
 
-		PermuPrevInt(ints)
+		PermuPrevInts(ints)
 		//fmt.Println(ints, "<<<<<")
 		checkCircle(t, func() bool {
-			more := PermuPrevInt(ints)
+			more := PermuPrevInts(ints)
 			//fmt.Println(ints)
 			return more
 		}, c, fmt.Sprintf("permutation prev(%v)", ints))
@@ -54,15 +54,15 @@ func TestPartPermutationInts(t *testing.T) {
 	test := func(ints []int, p, c int) {
 		fmt.Println(ints, ">>>>>")
 		checkCircle(t, func() bool {
-			more := PartPermuNextInt(ints, p)
+			more := PartPermuNextInts(ints, p)
 			fmt.Println(ints[:p], ints[p:])
 			return more
 		}, c, fmt.Sprintf("part permutation next(%v, %v)", ints[:p], ints[p:]))
 
-		PartPermuPrevInt(ints, p)
+		PartPermuPrevInts(ints, p)
 		fmt.Println(ints, "<<<<<")
 		checkCircle(t, func() bool {
-			more := PartPermuPrevInt(ints, p)
+			more := PartPermuPrevInts(ints, p)
 			fmt.Println(ints[:p], ints[p:])
 			return more
 		}, c, fmt.Sprintf("part permutation prev(%v, %v)", ints[:p], ints[p:]))
@@ -100,15 +100,15 @@ func TestSlidePermuInts(t *testing.T) {
 		prev := make([]int, 0, len(ints))
 		prev = append(prev, s...)
 		prev = append(prev, r...)
-		rn, rb := SlidePermuPrevInt(min, max, prev, len(s))
+		rn, rb := SlidePermuPrevInts(min, max, prev, len(s))
 		if rn != c || rb != b || !sliceEq(ints, prev) {
-			t.Errorf("SlidePermuPrevInt(%d, %d, %v-%v, %d) => (%d, %v)/%v-%v != (%d, %v)/%v-%v", min, max, s, r, len(s), rn, rb, prev[:rn], prev[rn:], c, b, ints[:c], ints[c:])
+			t.Errorf("SlidePermuPrevInts(%d, %d, %v-%v, %d) => (%d, %v)/%v-%v != (%d, %v)/%v-%v", min, max, s, r, len(s), rn, rb, prev[:rn], prev[rn:], c, b, ints[:c], ints[c:])
 		}
 
 		input := fmt.Sprintf("%v-%v", ints[:c], ints[c:])
-		rn, rb = SlidePermuNextInt(min, max, ints, c)
+		rn, rb = SlidePermuNextInts(min, max, ints, c)
 		if rn != len(s) || rb != b || !sliceEq(ints[:rn], s) || !sliceEq(ints[rn:], r) {
-			t.Errorf("SlidePermuNextInt(%d, %d, %s, %d) => (%d, %v)/%v-%v != (%d, %v)/%v-%v", min, max, input, c, rn, rb, ints[:rn], ints[rn:], len(s), b, s, r)
+			t.Errorf("SlidePermuNextInts(%d, %d, %s, %d) => (%d, %v)/%v-%v != (%d, %v)/%v-%v", min, max, input, c, rn, rb, ints[:rn], ints[rn:], len(s), b, s, r)
 		}
 	}
 

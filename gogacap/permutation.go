@@ -1,6 +1,6 @@
 package gogacap
 
-func PermuNextInt(ints []int) bool {
+func PermuNextInts(ints []int) bool {
 	if len(ints) <= 1 {
 		return false
 	}
@@ -26,7 +26,7 @@ func PermuNextInt(ints []int) bool {
 	return true
 }
 
-func PermuPrevInt(ints []int) bool {
+func PermuPrevInts(ints []int) bool {
 	if len(ints) <= 1 {
 		return false
 	}
@@ -50,18 +50,18 @@ func PermuPrevInt(ints []int) bool {
 	return s > 0
 }
 
-func PartPermuNextInt(ints []int, c int) bool {
+func PartPermuNextInts(ints []int, c int) bool {
 	reverseInts(ints[c:])
-	return PermuNextInt(ints)
+	return PermuNextInts(ints)
 }
 
-func PartPermuPrevInt(ints []int, c int) bool {
-	r := PermuPrevInt(ints)
+func PartPermuPrevInts(ints []int, c int) bool {
+	r := PermuPrevInts(ints)
 	reverseInts(ints[c:])
 	return r
 }
 
-func SlidePermuNextInt(min, max int, ints []int, c int) (int, bool) {
+func SlidePermuNextInts(min, max int, ints []int, c int) (int, bool) {
 	if len(ints) == 0 {
 		return 0, false
 	}
@@ -113,7 +113,7 @@ func SlidePermuNextInt(min, max int, ints []int, c int) (int, bool) {
 	}
 }
 
-func SlidePermuPrevInt(min, max int, ints []int, c int) (int, bool) {
+func SlidePermuPrevInts(min, max int, ints []int, c int) (int, bool) {
 	if len(ints) == 0 {
 		return 0, false
 	}
