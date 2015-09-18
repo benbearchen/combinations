@@ -56,3 +56,47 @@ func inplaceMergeInts(a, b []int) {
 	copy(a, c[:len(a)])
 	copy(b, c[len(a):])
 }
+
+func minMax(min, max, size int) (int, int) {
+	if min < 0 {
+		min = 0
+	}
+
+	if max > size {
+		max = size
+	}
+
+	if min > max {
+		min, max = max, min
+	}
+
+	return min, max
+}
+
+func rotateShiftRightOneInts(ints []int) {
+	if len(ints) <= 1 {
+		return
+	}
+
+	c := len(ints)
+	v := ints[c-1]
+	for i := c - 1; i > 0; i-- {
+		ints[i] = ints[i-1]
+	}
+
+	ints[0] = v
+}
+
+func rotateShiftLeftOneInts(ints []int) {
+	if len(ints) <= 1 {
+		return
+	}
+
+	c := len(ints)
+	v := ints[0]
+	for i := 1; i < c; i++ {
+		ints[i-1] = ints[i]
+	}
+
+	ints[c-1] = v
+}

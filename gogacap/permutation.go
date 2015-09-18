@@ -66,17 +66,7 @@ func SlidePermuNextInts(min, max int, ints []int, c int) (int, bool) {
 		return 0, false
 	}
 
-	if min < 0 {
-		min = 0
-	}
-
-	if max > len(ints) {
-		max = len(ints)
-	}
-
-	if min > max {
-		min, max = max, min
-	}
+	min, max = minMax(min, max, len(ints))
 
 	if c < max {
 		return c + 1, true
@@ -118,17 +108,7 @@ func SlidePermuPrevInts(min, max int, ints []int, c int) (int, bool) {
 		return 0, false
 	}
 
-	if min < 0 {
-		min = 0
-	}
-
-	if max > len(ints) {
-		max = len(ints)
-	}
-
-	if min > max {
-		min, max = max, min
-	}
+	min, max = minMax(min, max, len(ints))
 
 	s := max
 	if s == len(ints) {
@@ -144,7 +124,7 @@ func SlidePermuPrevInts(min, max int, ints []int, c int) (int, bool) {
 		}
 	}
 
-	if min <= s && s < c {
+	if min < c && s < c {
 		return c - 1, true
 	}
 

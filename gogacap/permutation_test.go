@@ -52,18 +52,18 @@ func TestPermutationInts(t *testing.T) {
 
 func TestPartPermutationInts(t *testing.T) {
 	test := func(ints []int, p, c int) {
-		fmt.Println(ints, ">>>>>")
+		//fmt.Println(ints, ">>>>>")
 		checkCircle(t, func() bool {
 			more := PartPermuNextInts(ints, p)
-			fmt.Println(ints[:p], ints[p:])
+			//fmt.Println(ints[:p], ints[p:])
 			return more
 		}, c, fmt.Sprintf("part permutation next(%v, %v)", ints[:p], ints[p:]))
 
 		PartPermuPrevInts(ints, p)
-		fmt.Println(ints, "<<<<<")
+		//fmt.Println(ints, "<<<<<")
 		checkCircle(t, func() bool {
 			more := PartPermuPrevInts(ints, p)
-			fmt.Println(ints[:p], ints[p:])
+			//fmt.Println(ints[:p], ints[p:])
 			return more
 		}, c, fmt.Sprintf("part permutation prev(%v, %v)", ints[:p], ints[p:]))
 	}
@@ -130,6 +130,17 @@ func TestSlidePermuInts(t *testing.T) {
 	test(0, 2, []int{1, 2}, 2, true, []int{2}, []int{1})
 	test(0, 2, []int{2, 1}, 1, true, []int{2, 1}, []int{})
 	test(0, 2, []int{2, 1}, 2, false, []int{}, []int{1, 2})
+
+	test(1, 1, []int{1, 2}, 1, true, []int{2}, []int{1})
+	test(1, 1, []int{2, 1}, 1, false, []int{1}, []int{2})
+
+	test(1, 2, []int{1, 2}, 1, true, []int{1, 2}, []int{})
+	test(1, 2, []int{1, 2}, 2, true, []int{2}, []int{1})
+	test(1, 2, []int{2, 1}, 1, true, []int{2, 1}, []int{})
+	test(1, 2, []int{2, 1}, 2, false, []int{1}, []int{2})
+
+	test(2, 2, []int{1, 2}, 2, true, []int{2, 1}, []int{})
+	test(2, 2, []int{2, 1}, 2, false, []int{1, 2}, []int{})
 
 	test(0, 0, []int{1, 1}, 0, false, []int{}, []int{1, 1})
 

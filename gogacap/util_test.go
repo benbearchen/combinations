@@ -120,3 +120,33 @@ func TestInplaceMergeInts(t *testing.T) {
 	test([]int{0, 2}, []int{1, 2, 3}, []int{0, 1}, []int{2, 2, 3})
 	test([]int{0, 4}, []int{1, 2, 3}, []int{0, 1}, []int{2, 3, 4})
 }
+
+func TestRotateShiftRightOneInts(t *testing.T) {
+	test := func(a, b []int) {
+		input := fmt.Sprintf("%v", a)
+		rotateShiftRightOneInts(a)
+		if !sliceEq(a, b) {
+			t.Errorf("rotateShiftRightOneInts(%s) => %v != %v", input, a, b)
+		}
+	}
+
+	test([]int{}, []int{})
+	test([]int{1}, []int{1})
+	test([]int{1, 2}, []int{2, 1})
+	test([]int{1, 2, 3}, []int{3, 1, 2})
+}
+
+func TestRotateShiftLeftOneInts(t *testing.T) {
+	test := func(a, b []int) {
+		input := fmt.Sprintf("%v", a)
+		rotateShiftLeftOneInts(a)
+		if !sliceEq(a, b) {
+			t.Errorf("rotateShiftLeftOneInts(%s) => %v != %v", input, a, b)
+		}
+	}
+
+	test([]int{}, []int{})
+	test([]int{1}, []int{1})
+	test([]int{1, 2}, []int{2, 1})
+	test([]int{1, 2, 3}, []int{2, 3, 1})
+}
