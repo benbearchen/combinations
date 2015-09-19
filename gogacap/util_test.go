@@ -150,3 +150,32 @@ func TestRotateShiftLeftOneInts(t *testing.T) {
 	test([]int{1, 2}, []int{2, 1})
 	test([]int{1, 2, 3}, []int{2, 3, 1})
 }
+
+func TestRotateInts(t *testing.T) {
+	test := func(a []int, c int, b []int) {
+		d := make([]int, len(a))
+		copy(d, a)
+
+		rotateInts(a, c)
+		if !sliceEq(a, b) {
+			t.Errorf("rotateInts(%v/%d) => %v != %v", d, c, a, b)
+		}
+
+		rotateBackInts(a, c)
+		if !sliceEq(a, d) {
+			t.Errorf("rotateBackInts(%v/%d) => %v != %v", b, c, a, d)
+		}
+
+	}
+
+	test([]int{}, 0, []int{})
+	test([]int{1}, 0, []int{1})
+	test([]int{1}, 1, []int{1})
+	test([]int{1, 2}, 0, []int{1, 2})
+	test([]int{1, 2}, 1, []int{2, 1})
+	test([]int{1, 2}, 2, []int{1, 2})
+	test([]int{1, 2, 3}, 0, []int{1, 2, 3})
+	test([]int{1, 2, 3}, 1, []int{2, 3, 1})
+	test([]int{1, 2, 3}, 2, []int{3, 1, 2})
+	test([]int{1, 2, 3}, 3, []int{1, 2, 3})
+}

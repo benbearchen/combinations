@@ -100,3 +100,15 @@ func rotateShiftLeftOneInts(ints []int) {
 
 	ints[c-1] = v
 }
+
+func rotateInts(ints []int, c int) {
+	reverseInts(ints[:c])
+	reverseInts(ints[c:])
+	reverseInts(ints)
+}
+
+func rotateBackInts(ints []int, c int) {
+	reverseInts(ints)
+	reverseInts(ints[:c])
+	reverseInts(ints[c:])
+}
