@@ -103,59 +103,33 @@ func SlideCombiPrevInts(min, max int, ints []int, c int) (int, bool) {
 	}
 
 	min, max = minMax(min, max, length)
+	e := 0
 	if c == 0 {
-		m := length - lowerBoundInts(ints, ints[length-1])
-		if m > max {
-			m = max
-		} else if m < min {
-			m = min
-		}
-
-		rotateBackInts(ints, m)
-		return m, false
 	} else if c == length {
 		if min < c {
 			return c - 1, true
 		} else {
 			return c, false
 		}
-	}
-
-	b := c + lowerBoundInts(ints[c:], ints[c-1])
-	if b != c {
-		if c == 1 || ints[c-2] <= ints[b-1] {
-			ints[c-1], ints[b-1] = ints[b-1], ints[c-1]
-			m := c + (length - lowerBoundInts(ints, ints[length-1]))
-			if m > max {
-				m = max
-			} else if m < min {
-				m = min
+	} else {
+		b := c + lowerBoundInts(ints[c:], ints[c-1])
+		if b != c {
+			if c == 1 || ints[c-2] <= ints[b-1] {
+				ints[c-1], ints[b-1] = ints[b-1], ints[c-1]
+				e = c
+			} else if min < c {
+				rotateShiftLeftOneInts(ints[c-1 : b])
+				return c - 1, true
+			} else {
+				p := lowerBoundInts(ints[:c-1], ints[b-1])
+				ints[p], ints[b-1] = ints[b-1], ints[p]
+				e = p + 1
+				rotateInts(ints[e:b], c-e)
 			}
-
-			rotateBackInts(ints[c:], m-c)
-			return m, true
 		} else if min < c {
-			rotateShiftLeftOneInts(ints[c-1 : b])
 			return c - 1, true
 		}
-	} else if min < c {
-		return c - 1, true
-	} else {
-		m := length - lowerBoundInts(ints, ints[length-1])
-		if m > max {
-			m = max
-		} else if m < min {
-			m = min
-		}
-
-		rotateBackInts(ints, m)
-		return m, false
 	}
-
-	p := lowerBoundInts(ints[:c-1], ints[b-1])
-	ints[p], ints[b-1] = ints[b-1], ints[p]
-	e := p + 1
-	rotateInts(ints[e:b], c-e)
 
 	m := e + (length - lowerBoundInts(ints, ints[length-1]))
 	if m > max {
@@ -165,5 +139,5 @@ func SlideCombiPrevInts(min, max int, ints []int, c int) (int, bool) {
 	}
 
 	rotateBackInts(ints[e:], m-e)
-	return m, true
+	return m, e > 0
 }
