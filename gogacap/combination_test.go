@@ -6,6 +6,7 @@ import (
 
 import (
 	"fmt"
+	"sync"
 )
 
 func TestCombinationNextInts(t *testing.T) {
@@ -278,4 +279,80 @@ func TestSlideCombiInts(t *testing.T) {
 	if pc != 0 || nc != 0 {
 		t.Errorf("fail count: prev(%d), next(%d)", pc, nc)
 	}
+}
+
+func TestSlideCombiInts2(t *testing.T) {
+	test := func(a []int) {
+		ps := make([]*set, 0, len(a)+1)
+		for i := 0; i <= len(a); i++ {
+			c := sliceCp(a)
+			s := genSetInts(func() ([]int, []int, bool) {
+				f := sliceCp(c[:i])
+				b := sliceCp(c[i:])
+				return f, b, PartCombiNextInts(c, i)
+			}, fmt.Sprintf("PartCombiNextInts(%v, %d)", c, i))
+
+			checkOrder(s, false, t)
+			ps = append(ps, s)
+		}
+
+		for i := 0; i <= len(a); i++ {
+			for j := i; j <= len(a); j++ {
+				c := sliceCp(a)
+				p := i
+				s := genSetInts(func() ([]int, []int, bool) {
+					f := sliceCp(c[:p])
+					b := sliceCp(c[p:])
+					r := false
+					p, r = SlideCombiNextInts(i, j, c, p)
+					return f, b, r
+				}, fmt.Sprintf("SlideCombiNextInts(%d, %d, %v, %d)", i, j, c, i))
+
+				checkOrder(s, false, t)
+				m := make([][]int, 0, len(s.selected))
+				for k := i; k <= j; k++ {
+					m = append(m, ps[k].selected...)
+				}
+
+				checkMatch(s, m, t)
+
+				c = sliceCp(a)
+				p, _ = SlideCombiPrevInts(i, j, c, i)
+				sr := genSetInts(func() ([]int, []int, bool) {
+					f := sliceCp(c[:p])
+					b := sliceCp(c[p:])
+					r := false
+					p, r = SlideCombiPrevInts(i, j, c, p)
+					return f, b, r
+				}, fmt.Sprintf("SlideCombiPrevInts(%d, %d, %v, %d)", i, j, c, i))
+
+				checkReverse(sr, s, t)
+			}
+		}
+	}
+
+	cases := [][]int{[]int{}}
+	quicktest, longtest, forevertest := 8, 12, 14
+	d := []int{quicktest, longtest, forevertest}
+	for n := 0; n < d[0]; n++ {
+		for i := len(cases); i > 0; {
+			i--
+			a := cases[i]
+			s := make([]int, len(a)+1)
+			copy(s, a)
+			s[len(a)] = n
+			cases = append(cases, s)
+		}
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(cases))
+	for _, c := range cases {
+		go func(c []int) {
+			defer wg.Done()
+			test(c)
+		}(c)
+	}
+
+	wg.Wait()
 }

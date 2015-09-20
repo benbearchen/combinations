@@ -22,6 +22,52 @@ func sliceEq(a, b []int) bool {
 	return true
 }
 
+func sliceLt(a, b []int) bool {
+	i, j := 0, 0
+	for i < len(a) && j < len(b) && a[i] == b[j] {
+		i++
+		j++
+	}
+
+	al := i < len(a)
+	bl := j < len(b)
+	if al && bl {
+		return a[i] < b[j]
+	} else {
+		return !al && bl
+	}
+}
+
+func sliceGt(a, b []int) bool {
+	return sliceLt(b, a)
+}
+
+func sliceCp(a []int) []int {
+	c := make([]int, len(a))
+	copy(c, a)
+	return c
+}
+
+func TestSliceF(t *testing.T) {
+	test := func(f func(a, b []int) bool, a, b []int, r bool) {
+		if f(a, b) != r {
+			t.Errorf("slice fail: %v(%v, %v) != %v", f, a, b, r)
+		}
+	}
+
+	test(sliceEq, []int{}, []int{}, true)
+	test(sliceEq, []int{}, []int{1}, false)
+	test(sliceEq, []int{2}, []int{1}, false)
+	test(sliceEq, []int{2}, []int{}, false)
+
+	test(sliceLt, []int{}, []int{}, false)
+	test(sliceLt, []int{}, []int{1}, true)
+	test(sliceLt, []int{1}, []int{}, false)
+	test(sliceLt, []int{1}, []int{1}, false)
+	test(sliceLt, []int{2}, []int{1}, false)
+	test(sliceLt, []int{1}, []int{2}, true)
+}
+
 func TestReverseInts(t *testing.T) {
 	test := func(a, b []int) {
 		reverseInts(a)
