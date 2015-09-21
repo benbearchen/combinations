@@ -30,6 +30,7 @@ type set struct {
 func genSetInts(f func() ([]int, []int, bool), name string) *set {
 	s := make([][]int, 0)
 	u := make([][]int, 0)
+
 	for {
 		a, b, c := f()
 		s = append(s, a)
@@ -398,6 +399,7 @@ func TestSlidePermuInts2(t *testing.T) {
 		ps := make([]*set, 0, len(a)+1)
 		for i := 0; i <= len(a); i++ {
 			c := sliceCp(a)
+			//fmt.Println("gen PartPermuNextInts: ", a, i)
 			s := genSetInts(func() ([]int, []int, bool) {
 				f := sliceCp(c[:i])
 				b := sliceCp(c[i:])
@@ -412,6 +414,7 @@ func TestSlidePermuInts2(t *testing.T) {
 			for j := i; j <= len(a); j++ {
 				c := sliceCp(a)
 				p := i
+				//fmt.Println("gen SlicePermuNextInts: ", a, i, j)
 				s := genSetInts(func() ([]int, []int, bool) {
 					f := sliceCp(c[:p])
 					b := sliceCp(c[p:])
@@ -430,11 +433,13 @@ func TestSlidePermuInts2(t *testing.T) {
 
 				c = sliceCp(a)
 				p, _ = SlidePermuPrevInts(i, j, c, i)
+				//fmt.Println("gen SlicePermuPrevInts: ", c, i, j)
 				sr := genSetInts(func() ([]int, []int, bool) {
 					f := sliceCp(c[:p])
 					b := sliceCp(c[p:])
 					r := false
 					p, r = SlidePermuPrevInts(i, j, c, p)
+					//fmt.Println("gen SlicePermuPrevInts: ", f, b, p, r)
 					return f, b, r
 				}, fmt.Sprintf("SlidePermuPrevInts(%d, %d, %v, %d)", i, j, c, i))
 
@@ -443,23 +448,26 @@ func TestSlidePermuInts2(t *testing.T) {
 		}
 	}
 
-	cases := [][]int{[]int{}}
-	quicktest, longtest, forevertest := 6, 8, 10
+	quicktest, longtest, forevertest := 5, 6, 9
 	d := []int{quicktest, longtest, forevertest}
-	for n := 0; n < d[0]; n++ {
-		for i := len(cases); i > 0; {
-			i--
-			a := cases[i]
-			s := make([]int, len(a)+1)
-			copy(s, a)
-			s[len(a)] = n
-			cases = append(cases, s)
-		}
-	}
+	cases := ChanZeroToNumber(d[0])
 
 	var wg sync.WaitGroup
-	wg.Add(len(cases))
-	for _, c := range cases {
+	pass, until := true, []int{}
+	for c := range cases {
+		if sliceEq(c, until) {
+			pass = false
+		}
+
+		if pass {
+			continue
+		}
+
+		if len(c) == len(until)+1 {
+			fmt.Println(c)
+		}
+
+		wg.Add(1)
 		go func(c []int) {
 			defer wg.Done()
 			test(c)
