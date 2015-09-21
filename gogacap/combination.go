@@ -121,7 +121,7 @@ func SlideCombiPrevInts(min, max int, ints []int, c int) (int, bool) {
 				rotateShiftLeftOneInts(ints[c-1 : b])
 				return c - 1, true
 			} else {
-				p := lowerBoundInts(ints[:c-1], ints[b-1])
+				p := upperBoundInts(ints[:c-1], ints[b-1])
 				ints[p], ints[b-1] = ints[b-1], ints[p]
 				e = p + 1
 				rotateInts(ints[e:b], c-e)
