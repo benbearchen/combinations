@@ -165,6 +165,7 @@ func TestInplaceMergeInts(t *testing.T) {
 	test([]int{0, 2}, []int{1, 2, 2}, []int{0, 1}, []int{2, 2, 2})
 	test([]int{0, 2}, []int{1, 2, 3}, []int{0, 1}, []int{2, 2, 3})
 	test([]int{0, 4}, []int{1, 2, 3}, []int{0, 1}, []int{2, 3, 4})
+	test([]int{1, 4}, []int{0, 2, 3}, []int{0, 1}, []int{2, 3, 4})
 }
 
 func TestRotateShiftRightOneInts(t *testing.T) {
